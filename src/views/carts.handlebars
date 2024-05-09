@@ -17,7 +17,9 @@
 <div class="containerCompras">
 <button class="btnCart" onclick="emptyCart('{{this.cartId}}')">Vaciar Carrito</button>
 <h3 >Total de la compra: ${{totalPurchase}}</h3>
-  {{>checkout}}
+<button class="btnCart" onclick="finalizePurchase('{{this.cartId}}')">Finalizar compra</button>
+ {{>checkout}}
+</div>
 
 </div>
  <script src="/js/cart.js"></script>
