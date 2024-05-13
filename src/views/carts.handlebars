@@ -17,8 +17,11 @@
 <div class="containerCompras">
 <button class="btnCart" onclick="emptyCart('{{this.cartId}}')">Vaciar Carrito</button>
 <h3 >Total de la compra: ${{totalPurchase}}</h3>
-<button class="btnCart" onclick="finalizePurchase('{{this.cartId}}')">Finalizar compra</button>
- {{>checkout}}
+<form method="post" action="/api/carts/{{cartId}}/purchase">
+    <button  type="submit" class="btn btn-success">Finalizar Compra</button>
+</form>
+
+
 </div>
 
 </div>

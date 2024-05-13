@@ -13,5 +13,11 @@ router.get("/realtimeproducts", checkUserRole(['admin']), viewsController.render
 router.get("/chat", checkUserRole(['user']) ,viewsController.renderChat);
 router.get("/", viewsController.renderHome);
 
+//Tercer integradora: 
+router.get("/reset-password", viewsController.renderResetPassword);
+router.get("/password", viewsController.renderChangePassword);
+router.get("/confirmation-env", viewsController.renderConfirmation);
+router.get("/panel-premium", viewsController.renderPremium);
+
 module.exports = router;
 

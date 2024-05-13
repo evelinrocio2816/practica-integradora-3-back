@@ -6,7 +6,11 @@ const UserDTO = require("../dto/user.dto.js");
 const CustomErrors = require("../services/errors/custom-error.js");
 const { EErrors } = require("../services/errors/enums.js");
 const { generateInfoError } = require("../services/errors/info.js");
-const logger =require("../utils/loggers.js") 
+const logger =require("../utils/loggers.js"); 
+
+const {generateResetToken}= require("../utils/tokenreset.js")
+const EmailManager = require("../services/email.js");
+const emailManager = new EmailManager();
 
 class UserController {
   async register(req, res) {
@@ -92,19 +96,24 @@ class UserController {
     }
   }
 
-  async profile(req, res) {
-    //Con DTO:
-    const userDto = new UserDTO(
-      req.user.first_name,
-      req.user.last_name,
-      req.user.role
-    );
-    logger.info("Usuario obtenido en el perfil:", userDto);
-    const isAdmin = req.user.role === "admin";
-    const cartId = req.user.cart.toString();
-    res.render("profile", { user: userDto, isAdmin, cartId });
-  }
 
+ async profile(req, res) {
+  try {
+      const isPremium = req.user.role === 'premium';
+      const userDto = new UserDTO(
+        req.user.first_name, 
+        req.user.last_name, 
+        req.user.role
+      );
+      logger.info("Usuario obtenido en el perfil:", userDto);
+      const isAdmin = req.user.role === 'admin';
+      const cartId = req.user.cart.toString();
+
+      res.render("profile", { user: userDto, isPremium, isAdmin, cartId });
+  } catch (error) {
+      res.status(500).send('Error interno del servidor');
+  }
+}
   async logout(req, res) {
     res.clearCookie("CookieToken");
     logger.info("Usuario desconectado.");
@@ -118,5 +127,101 @@ class UserController {
     logger.info("Acceso de administrador.");
     res.render("admin");
   }
+
+
+    //Tercer integradora: 
+    async requestPasswordReset(req, res) {
+      const { email } = req.body;
+
+      try {
+          // Buscar al usuario por su correo electrónico
+          const user = await UserModel.findOne({ email });
+          if (!user) {
+              return res.status(404).send("Usuario no encontrado");
+          }
+
+          // Generar un token 
+          const token = generateResetToken();
+
+          // Guardar el token en el usuario
+          user.resetToken = {
+              token: token,
+              expiresAt: new Date(Date.now() + 3600000) // 1 hora de duración
+          };
+          await user.save();
+
+          // Enviar correo electrónico con el enlace de restablecimiento utilizando EmailService
+          await emailManager.sendResetEmail(email, user.first_name, token);
+
+          res.redirect("/confirmation-env");
+      } catch (error) {
+          logger.error(error);
+          res.status(500).send("Error interno del servidor");
+      }
+  }
+
+  async resetPassword(req, res) {
+      const { email, password, token } = req.body;
+
+      try {
+          // Buscar al usuario por su correo electrónico
+          const user = await UserModel.findOne({ email });
+          if (!user) {
+              return res.render("changepassword", { error: "Usuario no encontrado" });
+          }
+
+          // Obtener el token de restablecimiento de la contraseña del usuario
+          const resetToken = user.resetToken;
+          if (!resetToken || resetToken.token !== token) {
+              return res.render("passwordreset", { error: "El token de restablecimiento de contraseña es inválido" });
+          }
+
+          // Verificar si el token ha expirado
+          const now = new Date();
+          if (now > resetToken.expiresAt) {
+              // Redirigir a la página de generación de nuevo correo de restablecimiento
+              return res.redirect("/changepassword");
+          }
+
+          // Verificar si la nueva contraseña es igual a la anterior
+          if (isValidPassword(password, user)) {
+              return res.render("changepassword", { error: "La nueva contraseña no puede ser igual a la anterior" });
+          }
+
+          // Actualizar la contraseña del usuario
+          user.password = createHash(password);
+          user.resetToken = undefined; // Marcar el token como utilizado
+          await user.save();
+
+          // Renderizar la vista de confirmación de cambio de contraseña
+          return res.redirect("/login");
+      } catch (error) {
+          logger.error(error);
+          return res.status(500).render("passwordreset", { error: "Error interno del servidor" });
+      }
+  }
+
+
+
+  async changePremiumRole(req, res) {
+      try {
+          const { uid } = req.params;
+  
+          const user = await UserModel.findById(uid);
+  
+          if (!user) {
+              return res.status(404).json({ message: 'Usuario no encontrado' });
+          }
+  
+          const newRole = user.role === 'user' ? 'premium' : 'user';
+  
+          const actualized = await UserModel.findByIdAndUpdate(uid, { role: newRole }, { new: true });
+          res.json(actualized);
+      } catch (error) {
+          logger.error(error);
+          res.status(500).json({ message: 'Error interno del servidor' });
+      }
+  }
+     
 }
 module.exports = UserController;

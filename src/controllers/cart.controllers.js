@@ -6,7 +6,10 @@ const ProductRepository = require("../repositorys/product.repository.js")
 const productRepository = new ProductRepository()
 const{generateUniqueCode, calculateTotal} = require("../utils/cartUtils.js")
 const logger = require("../utils/loggers.js")
-const {purchaseEmail} =require("../services/email.js")
+
+const EmailManager = require("../services/email.js");
+const emailManager = new EmailManager();
+
 
 class CartController {
     async newCart(req, res) {
@@ -158,7 +161,7 @@ class CartController {
             await cart.save();
 
 
-           await purchaseEmail(userWithCart.email , userWithCart.first_name ,ticket._id )
+           await emailManager.purchaseEmail(userWithCart.email , userWithCart.first_name ,ticket._id )
          res.render("checkout", {
             client: userWithCart.first_name,
             email: userWithCart.email,

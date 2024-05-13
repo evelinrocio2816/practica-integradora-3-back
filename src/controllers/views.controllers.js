@@ -115,6 +115,46 @@ class ViewsController {
       logger.info("Renderizando página de inicio");
         res.render("home");
     }
-}
+        //Tercer integradora: 
+        async renderResetPassword(req, res) {
+          try {
+              logger.info('Renderizando vista de restablecimiento de contraseña');
+              res.render("passwordreset");
+          } catch (error) {
+              logger.error('Error al renderizar vista de restablecimiento de contraseña:', error);
+              res.status(500).send("Error interno del servidor");
+          }
+      }
+      
+      async renderChangePassword(req, res) {
+          try {
+              logger.info('Renderizando vista de cambio de contraseña');
+              res.render("changepassword");
+          } catch (error) {
+              logger.error('Error al renderizar vista de cambio de contraseña:', error);
+              res.status(500).send("Error interno del servidor");
+          }
+      }
+      
+      async renderConfirmation(req, res) {
+          try {
+              logger.info('Renderizando vista de confirmación de envío');
+              res.render("confirmation-env");
+          } catch (error) {
+              logger.error('Error al renderizar vista de confirmación de envío:', error);
+              res.status(500).send("Error interno del servidor");
+          }
+      }
+      async renderPremium(req, res) {
+        try {
+            logger.info('Renderizando vista del panel premium');
+            res.render("panel-premium");
+        } catch (error) {
+            logger.error('Error al renderizar vista del panel premium:', error);
+            res.status(500).send("Error interno del servidor");
+        }
+    }
+  }
+
 
 module.exports = ViewsController;

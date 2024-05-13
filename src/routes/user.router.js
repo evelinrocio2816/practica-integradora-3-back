@@ -10,9 +10,8 @@ router.get("/profile", passport.authenticate("jwt", { session: false }), userCon
 router.post("/logout", userController.logout);
 router.get("/admin", passport.authenticate("jwt", { session: false }), userController.admin);
 
-// Ruta de autenticación de GitHub
-router.get('/auth/github', passport.authenticate('github'));
-
-router.get('/auth/github/callback', passport.authenticate('github', { failureRedirect: '/login' }));
-
+//Tercer integradora: 
+router.post("/requestPasswordReset", userController.requestPasswordReset); 
+router.post('/reset-password', userController.resetPassword);
+router.put("/premium/:uid", userController.changePremiumRole);
 module.exports = router;

@@ -8,11 +8,16 @@
   <form action="/api/user/logout" method="POST">
     <button class="btnMios" type="submit">Logout</button>
   </form>
+{{#if this.isAdmin}}
+	<a class="btnMios" href="/realtimeproducts">Modificar Productos</a>
+  <a class="btnMios" href="/products">Tienda</a>
+	{{else}}
+	{{#if this.isPremium}}
+	<a class="btnMios" href="/realtimeproducts">Panel Premium</a>
+	  {{/if}}
+	<a class="btnMios" href="/chat">Chat en vivo</a>
+	<a class="btnMios" href="/products">Tienda</a>
+	{{/if}}
 
-  {{#if this.isAdmin}}
-    <a class="btnMios" href="/realtimeproducts">Modificar Productos</a>
-  {{else}}
-    <a class="btnMios" href="/chat">Chat en vivo</a>
-    <a class="btnMios" href="/products">Tienda</a>
-  {{/if}}
 </div>
+
