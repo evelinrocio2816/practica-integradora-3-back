@@ -43,14 +43,25 @@ class CartController {
         const cartId = req.params.cid;
         const productId = req.params.pid;
         const quantity = req.body.quantity || 1;
+        const userId = req.user._id;
         try {
+
+              // Verificar si el usuario es premium
+        const user = await UserModel.findById(userId);
+        if (user.role === 'premium') {
+            // Verificar si el producto pertenece al usuario
+            const product = await productRepository.getProductsById(productId);
+            if (product.owner.equals(userId)) {
+                // Si el producto pertenece al usuario premium, retornar un error
+                return res.status(403).json({ error: "No puedes agregar un producto que te pertenece a tu carrito como usuario premium" });
+            }
+        }
             await cartRepository.addProduct(cartId, productId, quantity);
            const cartID = (req.user.cart).toString()
           logger.info("Product added to cart. Cart ID:", cartID);
 
             res.redirect(`/carts/${cartID}`)
     
-            //res.status(201).json({ message: 'Producto añadido al carrito correctamente' }); 
         } catch (error) {
            logger.error("Error al añadir producto al carrito:", error);
             res.status(400).json({ error: "Error al añadir producto al carrito" });

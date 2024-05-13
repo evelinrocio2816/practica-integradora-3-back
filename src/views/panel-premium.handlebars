@@ -1,5 +1,18 @@
 <h1>Bienvenido al Panel de Usuarios Premium</h1>
-
+<!-- Lista de productos del usuario -->
+<h2>Tus Productos</h2>
+<ul id="userProductsList">
+    {{#each userProducts}}
+    <li>
+        <h3>{{this.title}}</h3>
+        <p>{{this.description}}</p>
+        <p>Precio: ${{this.price}}</p>
+        <form class="deleteForm" data-product-id="{{this._id}}">
+            <button type="button" class="deleteButton">Eliminar</button>
+        </form>
+    </li>
+    {{/each}}
+</ul>
 <h2>Agregar Nuevo Producto</h2>
 <form id="panelForm">
     <label for="title">Título:</label>
@@ -32,20 +45,7 @@
     <button type="submit">Agregar Producto</button>
 </form>
 
-<!-- Lista de productos del usuario -->
-<h2>Tus Productos</h2>
-<ul id="userProductsList">
-    {{#each userProducts}}
-    <li>
-        <h3>{{this.title}}</h3>
-        <p>{{this.description}}</p>
-        <p>Precio: ${{this.price}}</p>
-        <form class="deleteForm" data-product-id="{{this._id}}">
-            <button type="button" class="deleteButton">Eliminar</button>
-        </form>
-    </li>
-    {{/each}}
-</ul>
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
 <script src="/js/panel-premium.js"></script>
