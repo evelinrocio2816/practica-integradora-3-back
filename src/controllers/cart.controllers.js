@@ -1,8 +1,8 @@
-const CartRepository = require("../repositorys/cart.repository.js");
+const CartRepository = require("../repositories/cart.repository.js");
 const cartRepository = new CartRepository();
 const TicketModel = require("../models/ticket.models.js")
 const UserModel = require("../models/user.models.js")
-const ProductRepository = require("../repositorys/product.repository.js")
+const ProductRepository = require("../repositories/product.repository.js")
 const productRepository = new ProductRepository()
 const{generateUniqueCode, calculateTotal} = require("../utils/cartUtils.js")
 const logger = require("../utils/loggers.js")
@@ -51,7 +51,7 @@ class CartController {
         if (user.role === 'premium') {
             // Verificar si el producto pertenece al usuario
             const product = await productRepository.getProductsById(productId);
-            if (product.owner.equals(userId)) {
+            if (product.owner === user.email)  {
                 // Si el producto pertenece al usuario premium, retornar un error
                 return res.status(403).json({ error: "No puedes agregar un producto que te pertenece a tu carrito como usuario premium" });
             }
@@ -172,11 +172,12 @@ class CartController {
             await cart.save();
 
 
-           await emailManager.purchaseEmail(userWithCart.email , userWithCart.first_name ,ticket._id )
+           await emailManager.purchaseEmail(userWithCart.email , userWithCart.first_name ,ticket._id , ticket.amount)
          res.render("checkout", {
             client: userWithCart.first_name,
             email: userWithCart.email,
-            numTicket: ticket._id
+            numTicket: ticket._id,
+            totalAmount: ticket.amount
 
          })
            

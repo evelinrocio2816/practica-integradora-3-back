@@ -203,7 +203,7 @@ class UserController {
 
 
 
-  async changePremiumRole(req, res) {
+  async togglePremium(req, res) {
      const { uid } = req.params;
       try {
          
@@ -219,17 +219,7 @@ class UserController {
           res.status(500).json({ message: 'Error interno del servidor' });
       }
   }
-  async togglePremium(req, res) {
-    const userId = req.params.uid;
-    try {
-        const user = await UserModel.findById(userId);
-        user.role = user.role === 'user' ? 'premium' : 'user';
-        await user.save();
-        res.json({ message: `Rol de usuario actualizado a ${user.role}` });
-    } catch (error) {
-        res.status(500).json({ error: 'Error al actualizar el rol del usuario' });
-    }
-}
+ 
      
 }
 module.exports = UserController;

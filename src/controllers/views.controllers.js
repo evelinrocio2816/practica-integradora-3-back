@@ -1,5 +1,5 @@
 const ProductModel = require("../models/products.models.js");
-const CartRepository = require("../repositorys/cart.repository.js");
+const CartRepository = require("../repositories/cart.repository.js");
 const cartRepository = new CartRepository();
 const logger =require("../utils/loggers.js") 
 
@@ -96,9 +96,10 @@ class ViewsController {
     }
 
     async renderRealTimeProducts(req, res) {
+      const user = req.user; 
         try {
           logger.info("Renderizando vista de productos en tiempo real");
-            res.render("realtimeproducts");
+            res.render("realtimeproducts", {role: user.role, email: user.email});
         } catch (error) {
           logger.info("Error en la vista real time", error);
             res.status(500).json({ error: "Error interno del servidor" });

@@ -1,4 +1,5 @@
 const ProductModel = require("../models/products.models.js");
+const logger = require("../utils/loggers.js")
 
 class ProductRepository {
   async addProduct({
@@ -10,17 +11,19 @@ class ProductRepository {
     stock,
     category,
     thumbnails,
+    owner
   }) {
     try {
       if (!title || !description || !price || !code || !stock || !category) {
-        console.log("Todos los campos son obligatorios");
+       logger.info("Todos los campos son obligatorios");
         return;
       }
       const existProduct = await ProductModel.findOne({ code: code });
       if (existProduct) {
-        console.log("El código debe ser único!!!");
+       logger.info("El código debe ser único!!!");
         return;
       }
+      logger.info("Owner", owner);
       const newProduct = new ProductModel({
         title,
         description,
@@ -31,13 +34,14 @@ class ProductRepository {
         category,
         status: true,
         thumbnails: thumbnails || [],
+        owner
       });
 
       await newProduct.save();
 
       return newProduct;
     } catch (error) {
-     console.log("Error");
+    logger.info("Error");
     }
   }
 
@@ -90,10 +94,10 @@ class ProductRepository {
     try {
       const product = await ProductModel.findById(id);
       if (!product) {
-        console.log("Producto no encontrado");
+       logger.info("Producto no encontrado");
         return null;
       }
-      console.log("Producto encontrado!!");
+     logger.info("Producto encontrado!!");
       return product;
     } catch (error) {
       throw new Error("Error");
@@ -104,10 +108,10 @@ class ProductRepository {
     try {
       const updated = await ProductModel.findByIdAndUpdate(id, updatedProduct);
       if (!updated) {
-        console.log("No se encuentra el producto");
+       logger.info("No se encuentra el producto");
         return null;
       }
-      console.log("Producto actualizado con exito!");
+     logger.info("Producto actualizado con exito!");
       return updated;
     } catch (error) {
       throw new Error("Error");
@@ -118,10 +122,10 @@ class ProductRepository {
     try {
       const removed = await ProductModel.findByIdAndDelete(id);
       if (!removed) {
-        console.log("El Producto no fue encontrado");
+       logger.info("El Producto no fue encontrado");
         return null;
       }
-      console.log("Producto eliminado correctamente!");
+     logger.info("Producto eliminado correctamente!");
       return removed;
     } catch (error) {
       throw new Error("Error");
