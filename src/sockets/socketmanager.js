@@ -1,5 +1,5 @@
 const socket = require("socket.io");
-const ProductRepository = require("../repositorys/product.repository.js");
+const ProductRepository = require("../repositories/product.repository.js");
 const productRepository = new ProductRepository(); 
 const MessageModel = require("../models/message.models.js");
 

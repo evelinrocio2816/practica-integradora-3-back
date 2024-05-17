@@ -1,0 +1,200 @@
+paths:
+  /api/user/register:
+    post:
+      summary: Registro de usuario
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Usuario registrado exitosamente
+        '400':
+          description: Petición incorrecta
+        '500':
+          description: Error interno del servidor
+
+  /api/user/login:
+    post:
+      summary: Iniciar sesión de usuario
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginUser'
+      responses:
+        '200':
+          description: Inicio de sesión exitoso
+        '400':
+          description: Petición incorrecta
+        '401':
+          description: Credenciales incorrectas
+        '500':
+          description: Error interno del servidor
+
+  /api/user/profile:
+    get:
+      summary: Obtener perfil de usuario
+      tags:
+        - User
+      security:
+        - JWTAuth: []
+      responses:
+        '200':
+          description: Perfil de usuario obtenido exitosamente
+        '401':
+          description: No autorizado
+        '500':
+          description: Error interno del servidor
+
+  /api/user/logout:
+    post:
+      summary: Cerrar sesión de usuario
+      tags:
+        - User
+      responses:
+        '200':
+          description: Sesión cerrada exitosamente
+        '500':
+          description: Error interno del servidor
+
+  /api/user/admin:
+    get:
+      summary: Acceso a la vista de administrador
+      tags:
+        - User
+      security:
+        - JWTAuth: []
+      responses:
+        '200':
+          description: Vista de administrador obtenida exitosamente
+        '401':
+          description: No autorizado
+        '500':
+          description: Error interno del servidor
+
+  /api/user/requestPasswordReset:
+    post:
+      summary: Solicitar restablecimiento de contraseña
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: Correo electrónico del usuario
+                  example: user@example.com
+      responses:
+        '200':
+          description: Solicitud de restablecimiento de contraseña enviada exitosamente
+        '400':
+          description: Petición incorrecta
+        '500':
+          description: Error interno del servidor
+
+  /api/user/reset-password:
+    post:
+      summary: Restablecer contraseña
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  description: Token de restablecimiento de contraseña
+                  example: abcd1234
+                newPassword:
+                  type: string
+                  description: Nueva contraseña del usuario
+                  example: newpassword123
+      responses:
+        '200':
+          description: Contraseña restablecida exitosamente
+        '400':
+          description: Petición incorrecta
+        '401':
+          description: Token de restablecimiento de contraseña inválido
+        '500':
+          description: Error interno del servidor
+
+  /api/user/premium/{uid}:
+    put:
+      summary: Alternar estado premium de usuario
+      tags:
+        - User
+      parameters:
+        - in: path
+          name: uid
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID del usuario
+      responses:
+        '200':
+          description: Estado premium del usuario actualizado exitosamente
+        '400':
+          description: Petición incorrecta
+        '401':
+          description: No autorizado
+        '404':
+          description: Usuario no encontrado
+        '500':
+          description: Error interno del servidor
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        first_name:
+          type: string
+          description: Nombre del usuario
+          example: Juan
+        last_name:
+          type: string
+          description: Apellido del usuario
+          example: Pérez
+        email:
+          type: string
+          description: Correo electrónico del usuario
+          example: juan@example.com
+        password:
+          type: string
+          description: Contraseña del usuario
+          example: password123
+        age:
+          type: integer
+          description: Edad del usuario
+          example: 30
+        role:
+          type: string
+          description: Rol del usuario
+          enum: [admin, user, premium]
+          example: user
+      required:
+        - first_name
+        - last_name
+        - email
+        - password
+      example: 
+        first_name: Gaston F.
+        last_name: Sardelli
+        password: 1234
+        email: Cuty@gmail.com

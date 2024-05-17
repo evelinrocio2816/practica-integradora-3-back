@@ -1,0 +1,171 @@
+paths:
+  /api/products:
+    get: 
+      summary: obtenemos todos los productos de la Base de Datos 
+      tags:
+        - Products
+      responses:
+        "200":
+          description: se obtiene todos los productos de la base de datos
+          content: 
+            application/json:
+             schema:
+              $ref: '#/components/schemas/Product'
+        '201':
+          description: Producto creado exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Petición incorrecta
+        '409':
+          description: El producto ya existe
+        '500':
+          description: Error interno del servidor
+  post:
+      summary: Agregar un nuevo producto
+      tags:
+        - Products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '201':
+          description: Producto creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Petición incorrecta
+        '500':
+          description: Error interno del servidor
+  /products/{pid}:
+    get:
+      summary: Obtener un producto por ID
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          description: ID del producto a obtener
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Producto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Producto no encontrado
+        '500':
+          description: Error interno del servidor
+    put:
+      summary: Actualizar un producto por ID
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          description: ID del producto a actualizar
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: Producto actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Petición incorrecta
+        '404':
+          description: Producto no encontrado
+        '500':
+          description: Error interno del servidor
+    delete:
+      summary: Eliminar un producto por ID
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          description: ID del producto a eliminar
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Producto eliminado exitosamente
+        '404':
+          description: Producto no encontrado
+        '500':
+          description: Error interno del servidor     
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        title:
+          type: string
+          description: El título del producto
+        description:
+          type: string
+          description: La descripción del producto
+        price:
+          type: number
+          description: El precio del producto
+        img:
+          type: string
+          description: La URL de la imagen del producto
+        code:
+          type: string
+          description: El código único del producto
+        stock:
+          type: integer
+          description: La cantidad de stock disponible del producto
+        category:
+          type: string
+          description: La categoría del producto
+        status:
+          type: boolean
+          description: El estado del producto (activo/inactivo)
+        thumbnails:
+          type: array
+          description: Las URLs de las miniaturas del producto
+          items:
+            type: string
+      required:
+        - title
+        - description
+        - price
+        - code
+        - stock
+        - category
+        - status
+      example:
+        title: Camiseta
+        description: Camiseta de algodón con estampado floral
+        price: 25.99
+        code: CAM123
+        stock: 100
+        category: Ropa
+        status: true
+    

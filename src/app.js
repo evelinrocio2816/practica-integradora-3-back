@@ -7,20 +7,19 @@ const initializePassport = require("./config/passport.config.js");
 const PORT = 8080;
 require("./db/database.js");
 const compression=require("express-compression")
-
 const productsRouter = require("./routes/products.router.js");
 const cartsRouter = require("./routes/carts.router.js");
 const viewsRouter = require("./routes/views.router.js");
 const userRouter = require("./routes/user.router.js");
-
 const mockingRouter = require("./routes/mocking.router.js")
 const handleErrors= require("./middleware/error.js")
-
 const addLogger= require("./middleware/logger.js")
-
 const TestRouter = require("./routes/Test.router.js")
-
 const logger= require("./utils/loggers.js")
+
+//Swagger
+const swaggerJSDoc = require("swagger-jsdoc")
+const swaggerUiExpress = require("swagger-ui-express")
 //Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -65,4 +64,23 @@ const httpServer = app.listen(PORT, () => {
 
 //Websockets: 
 const SocketManager = require("./sockets/socketmanager.js");
+const { info } = require("winston");
 new SocketManager(httpServer);
+
+//swagger
+
+const swaggerOptions ={
+    definition: {
+        openapi: "3.0.1",
+        info:{
+            title: "Documentacion de tienda de Ropas",
+            description: "App dedicada a la venta online de ropas y accesorios de damas"
+        }
+    },
+    apis: ["./src/docs/**/*.yaml"]
+}
+
+//Conecto swagger con mi servidor Express
+
+const specs = swaggerJSDoc(swaggerOptions);
+app.use("/apidocs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs))

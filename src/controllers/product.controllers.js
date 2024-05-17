@@ -1,6 +1,7 @@
 const ProductRepository = require("../repositories/product.repository");
 const productRepository = new ProductRepository();
 const logger =require("../utils/loggers.js") 
+
 class ProductController {
 
     async addProduct(req, res) {
